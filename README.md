@@ -1,5 +1,7 @@
 # Labloop
 
+[中文文档 →](README_zh.md)
+
 **Autonomous experiment loop for Claude Code.** Give it a codebase and a metric — it experiments, evaluates, keeps improvements, discards regressions, and repeats. Forever. You sleep, it researches.
 
 Inspired by Karpathy's [autoresearch](https://github.com/karpathy/autoresearch), but generalized: labloop works on **any optimization problem with a measurable metric**, not just LLM training.
@@ -117,90 +119,5 @@ your-project/
 - Whatever runtime your project needs (Python, Node, Rust, etc.)
 
 ## License
-
-MIT
-
----
-
-# Labloop
-
-**Claude Code 自主实验循环技能。** 给它一个代码库和一个指标——它自动实验、评估、保留改进、丢弃退步，然后重复。永不停止。你睡觉，它做研究。
-
-灵感来自 Karpathy 的 [autoresearch](https://github.com/karpathy/autoresearch)，但做了泛化：labloop 适用于**任何有可量化指标的优化问题**，不仅限于 LLM 训练。
-
-## 工作原理
-
-```
-init  →  定义优化目标、评估指标、agent 可修改的文件
-go    →  跑 baseline → 进入无限实验循环
-          ┌─→ 分析历史记录
-          │   提出假设
-          │   修改代码
-          │   git commit
-          │   运行实验
-          │   提取指标
-          │   变好了？ → 保留（分支前进）
-          │   没变好？ → 丢弃（git reset）
-          └─→ 继续循环
-```
-
-Agent 永不停止、永不提问，直到你手动中断。
-
-## 适用场景
-
-| 领域 | 改什么 | 评估什么 |
-|---|---|---|
-| ML 训练 | 架构、超参、优化器 | val_loss, accuracy |
-| 算法优化 | 实现代码 | 延迟、吞吐量 |
-| Prompt 工程 | 提示词、few-shot 示例 | 准确率、评分 |
-| 前端性能 | 组件、CSS、配置 | Lighthouse 分数 |
-| 编译调优 | 编译参数、配置 | 二进制大小、benchmark |
-| 任何优化问题 | 任何可编辑文件 | 任何单一数值指标 |
-
-完整配置示例见 [`references/examples.md`](references/examples.md)。
-
-## 安装
-
-```bash
-# 克隆仓库
-git clone https://github.com/d-wwei/labloop.git
-
-# 方式一：符号链接到 Claude Code skills 目录
-ln -s "$(pwd)/labloop" ~/.claude/skills/labloop
-
-# 方式二：直接复制
-cp -r labloop ~/.claude/skills/labloop
-```
-
-Claude Code 下次启动时会自动识别该技能。
-
-## 快速开始
-
-```
-/labloop init      # 交互式配置——生成 labloop.md
-/labloop go        # 跑 baseline + 启动无限实验循环
-/labloop status    # 查看进度：已跑实验数、最佳指标、最近结果
-/labloop history   # 完整实验记录表
-/labloop rewind    # 回退到历史最佳 commit
-```
-
-## 设计原则
-
-从 autoresearch 提炼并泛化：
-
-1. **单一指标至上** — 每次实验由一个数字决定好坏
-2. **固定预算** — 每次实验时间相同，公平比较
-3. **保留或丢弃** — 二元决策，分支只往前走
-4. **永不停止** — agent 无限运行直到人工中断
-5. **简单优先** — 同等效果，更简单的方案 = 改进
-6. **单变量原则** — 隔离变量，从历史中学习
-
-## 依赖
-
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- Git
-- 项目本身的运行环境（Python、Node、Rust 等）
-
-## 协议
 
 MIT
