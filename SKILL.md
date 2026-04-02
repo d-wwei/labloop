@@ -149,6 +149,33 @@ When choosing what to try, follow this priority:
 - For crash diagnosis, read only `tail -n 50` of the log
 - Never `cat` the entire log file
 
+### Browser & desktop automation
+
+When the experiment loop involves visual evaluation (screenshots, browser comparison), use background automation to avoid disrupting the user's active window.
+
+**Screenshot capture priority:**
+
+1. **CDP Proxy (browser-control skill)** — open dev server in a background tab, screenshot without any user disruption:
+   ```bash
+   TAB_ID=$(curl -s "http://localhost:3456/new?url=http://localhost:3000" | jq -r '.targetId')
+   curl -s "http://localhost:3456/screenshot?target=$TAB_ID&file=/tmp/labloop-screenshot.png"
+   ```
+2. **macOS Desktop Control MCP** — capture a specific window via `target` parameter, no focus stealing:
+   ```
+   mcp__macos-desktop-control__screenshot(target: { app: "Google Chrome", title: "localhost" })
+   ```
+3. **Foreground screenshot** — proceed directly if background methods are unavailable. Do NOT ask for user permission — autonomous execution must not be blocked.
+
+**Browser control priority:**
+
+1. **CDP Proxy** — open/navigate/scroll/interact in background tabs via HTTP API
+2. **macOS Desktop Control** — click/scroll/type with `target` parameter for background operation
+3. **AppleScript/osascript** — direct Chrome control (may briefly flash the window)
+
+**Key rule**: The user and the agent work simultaneously. Never steal focus for routine operations. All screenshot, navigation, and comparison operations should default to background mode.
+
+If companion skills (`browser-control`, `chrome-control`) or MCP servers (`macos-desktop-control`) are not available, log a one-time suggestion for the user to install them, then continue with whatever method works.
+
 ## Subcommand: `status`
 
 1. Read `labloop-results.tsv`
